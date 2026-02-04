@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h1>University Student List</h1>
+        
+        <p>Total Students: {{ student_count }}</p>
+        <br>
+        <a href="{% url 'login' %}">Logout</a>        
+        <br>
+
+        <!-- <a href="{% url 'add_student' %}">➕ Add New Student</a>
+    
+        <br>
+        <a href="{% url 'studentdashboard:student_dashboard' %}"><-- back</a>
+        <br> -->
+    
+    {% block content %}
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Program</th>
+                <th>Grades</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.roll }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.program }}</td>
+                <td>
+                    {% for grade in student.grades.all %}
+                        <div>
+                            {{ grade.sem }}: {{ grade.gpa }} [{{ grade.status }}]
+                        </div>
+                    {% empty %}
+                        No grades recorded.
+                    {% endfor %}
+                </td>
+                <td>
+                        <a href="">Edit</a>
+
+                    
+                    </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endblock %}
+</div>
+</body>
+</html>
