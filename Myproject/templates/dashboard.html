@@ -8,18 +8,23 @@
 </head>
 <body>
     <div>
-        <h1>University Student List</h1>
-        
-        <p>Total Students: {{ student_count }}</p>
-        <br>
-        <a href="{% url 'login' %}">Logout</a>        
-        <br>
+    <h1>University Student List</h1>
 
-        <!-- <a href="{% url 'add_student' %}">➕ Add New Student</a>
+    <p>Total Students: {{ student_count }}</p>
     
-        <br>
-        <a href="{% url 'studentdashboard:student_dashboard' %}"><-- back</a>
-        <br> -->
+    
+    <br>
+    <a href="{% url 'login' %}">Login</a>
+    <br>
+      <a href="{% url 'studentdashboard:add_student' %}">➕ Add New Student</a>
+    <br>
+
+    <a href="{% url 'studentdashboard:student_dashboard' %}"><-- back</a>
+    <br>
+
+
+
+
     
     {% block content %}
     <table border="1">
@@ -49,8 +54,6 @@
                 </td>
                 <td>
                         <a href="">Edit</a>
-
-                    
                     </td>
             </tr>
             {% endfor %}

@@ -1,0 +1,26 @@
+
+{% extends "dashboard.html" %}
+
+{% block content %}
+    <h2>Register New Student</h2>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <p>
+            <label>Full Name:</label><br>
+            <input type="text" name="name" required>
+        </p>
+        <p>
+            <label>Roll Number:</label><br>
+            <input type="text" name="roll" required>
+        </p>
+        <p>
+            <label>Program:</label><br>
+            <input type="text" name="program">
+        </p>
+        
+        <button type="submit">Save Student</button>
+        <a href="{% url 'studentdashboard:student_dashboard' %}">Cancel</a>
+    </form>
+{% endblock %}
+
