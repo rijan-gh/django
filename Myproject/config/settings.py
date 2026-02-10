@@ -47,6 +47,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'studentdashboard.middleware.StudentSystemMiddleware',  # Custom middleware for logging and error handling
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -120,3 +122,39 @@ STATIC_URL = 'static/'
 LOGIN_URL = 'studentdashboard:login'              # The 'name' of your login path in urls.py
 LOGIN_REDIRECT_URL = 'studentdashboard:student_dashboard'  # Redirects here after successful login
 LOGOUT_REDIRECT_URL = 'studentdashboard:login'    # Redirects here after clicking logout
+
+# logger
+
+import os
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+    'file': {
+        'level': 'INFO',
+        'class': 'logging.handlers.RotatingFileHandler', # <--- MAGIC LINE
+        'filename': os.path.join(BASE_DIR, 'student_system.log'),
+        'maxBytes': 1024 * 1024 * 5,  # 5 Megabytes per file
+        'backupCount': 3,              # Keep only 3 old files
+        'formatter': 'verbose',
+    },
+},
+    'loggers': {
+        'studentdashboard': { # <--- Change this to YOUR app name
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}      
+
+
+
+        
