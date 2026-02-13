@@ -4,13 +4,57 @@ from .models import StudentProfile
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required  # <--- THE FIX
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 from django.contrib import messages
 
-@login_required  # 1. AUTHENTICATION: Only logged-in users get data
+# @login_required  # 1. AUTHENTICATION: Only logged-in users get data
+# def add_student(request):
+#     if request.method == "POST":
+#         # 1. DATA EXTRACTION: Handle both Form Data and JSON
+#         if request.content_type == 'application/json':
+#             try:
+#                 data = json.loads(request.body)
+#             except json.JSONDecodeError:
+#                 return JsonResponse({"error": "Invalid JSON"}, status=400)
+#         else:
+#             data = request.POST
+
+#         name = data.get('name')
+#         roll = data.get('roll')
+#         program = data.get('program')
+
+#         # 2. VALIDATION
+#         if not name or not roll:
+#             if request.headers.get('Accept') == 'application/json':
+#                 return JsonResponse({"error": "Name and Roll are required"}, status=400)
+#             messages.error(request, "Name and Roll Number are required!")
+#             return render(request, 'add_student.html')
+
+#         # 3. DATABASE OPERATION
+#         student = StudentProfile.objects.create(
+#             name=name,
+#             roll=roll,
+#             program=program
+#         )
+
+#         # 4. RESPONSE LOGIC (React vs HTML)
+#         if request.headers.get('Accept') == 'application/json':
+#             return JsonResponse({
+#                 "message": "Student created successfully",
+#                 "id": student.id
+#             }, status=201) # 201 Created is the standard for new resources
+
+#         messages.success(request, f"Student {name} added!")
+#         return redirect('studentdashboard:student_dashboard')
+
+#     # GET Request: Just show the HTML form
+#     return render(request, 'add_student.html')
+
+
+@csrf_exempt
 def add_student(request):
     if request.method == "POST":
-        # 1. DATA EXTRACTION: Handle both Form Data and JSON
         if request.content_type == 'application/json':
             try:
                 data = json.loads(request.body)
@@ -19,37 +63,36 @@ def add_student(request):
         else:
             data = request.POST
 
-        name = data.get('name')
-        roll = data.get('roll')
-        program = data.get('program')
+        try:
+            # 1. Create the Student
+            student = StudentProfile.objects.create(
+                name=data.get('name'),
+                roll=data.get('roll'),
+                program=data.get('program')
+            )
 
-        # 2. VALIDATION
-        if not name or not roll:
-            if request.headers.get('Accept') == 'application/json':
-                return JsonResponse({"error": "Name and Roll are required"}, status=400)
-            messages.error(request, "Name and Roll Number are required!")
-            return render(request, 'add_student.html')
+            # 2. Create the Grade (Mandatory for your React structure)
+            # This uses the gpa/sem logic from your Model
+            student.grades.create(
+                year=data.get('year') or "2024",
+                sem=data.get('sem') or "1st",
+                gpa=float(data.get('gpa')) if data.get('gpa') else 0.0
+            )
 
-        # 3. DATABASE OPERATION
-        student = StudentProfile.objects.create(
-            name=name,
-            roll=roll,
-            program=program
-        )
-
-        # 4. RESPONSE LOGIC (React vs HTML)
-        if request.headers.get('Accept') == 'application/json':
             return JsonResponse({
                 "message": "Student created successfully",
                 "id": student.id
-            }, status=201) # 201 Created is the standard for new resources
+            }, status=201)
 
-        messages.success(request, f"Student {name} added!")
-        return redirect('studentdashboard:student_dashboard')
+        except Exception as e:
+            print(f"DATABASE ERROR: {e}") # Check your terminal for this!
+            return JsonResponse({"error": str(e)}, status=500)
 
-    # GET Request: Just show the HTML form
     return render(request, 'add_student.html')
 
+
+
+@csrf_exempt
 def student_dashboard(request):
     # Fetch Data
     students = StudentProfile.objects.prefetch_related('grades').all()

@@ -37,9 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'studentdashboard',
+    'corsheaders',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins for CORS (you can restrict this in production)
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # CORS middleware for handling cross-origin requests
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
